@@ -1,0 +1,53 @@
+version: '3'
+
+services:
+  source_bank_db:
+    container_name: source_db
+    image: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: db1
+      POSTGRES_USER: user1
+      POSTGRES_PASSWORD: password1
+    volumes:
+      - db1_data:/var/lib/postgresql/data
+    ports:
+      - 4321:5432
+    networks:
+      - default
+
+  bank_db:
+    container_name: target_db
+    image: postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: db2
+      POSTGRES_USER: user2
+      POSTGRES_PASSWORD: password2
+    volumes:
+      - db2_data:/var/lib/postgresql/data
+    networks:
+      - default
+
+  prefect-server:
+    container_name: prefect-server
+    image: prefecthq/prefect:2-python3.10
+    restart: always
+    volumes:
+      - prefect:/root/.prefect
+    entrypoint: ["prefect", "server", "start"]
+    environment:
+      - PREFECT_SERVER_API_HOST=0.0.0.0
+      - PREFECT_UI_URL=http://host:4200/api
+      - PREFECT_API_URL=http://host:4200/api
+    ports:
+      - 4200:4200
+    networks:
+      - default
+
+volumes:
+  db1_data:
+  db2_data:
+  prefect:
+networks:
+  default:

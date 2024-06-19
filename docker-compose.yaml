@@ -44,6 +44,19 @@ services:
       - 4200:4200
     networks:
       - default
+  
+  localstack:
+    image: localstack/localstack:1.0.4
+    environment:
+      - SERVICES=s3:4566
+      - HOSTNAME=localstack
+      - HOSTNAME_EXTERNAL=localstack
+      - DEFAULT_REGION=us-east-2
+    ports:
+      - "4567:4566"
+    networks:
+      - default
+    
 
 volumes:
   db1_data:
